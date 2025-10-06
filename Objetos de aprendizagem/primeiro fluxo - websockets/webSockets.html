@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aprenda WebSockets na Prática</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        color: white;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .learning-path {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .phase {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s;
+      }
+
+      .phase:hover {
+        transform: translateY(-5px);
+      }
+
+      .phase-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .phase-number {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5em;
+        font-weight: bold;
+        flex-shrink: 0;
+      }
+
+      .phase-title {
+        font-size: 1.5em;
+        color: #333;
+        flex-grow: 1;
+      }
+
+      .phase-status {
+        font-size: 1.5em;
+      }
+
+      .phase-content {
+        padding-left: 65px;
+      }
+
+      .phase-content.collapsed {
+        display: none;
+      }
+
+      .challenge {
+        background: #f8f9ff;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 15px 0;
+        border-left: 4px solid #667eea;
+      }
+
+      .challenge-title {
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+      }
+
+      .interactive-area {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 15px;
+        border: 2px dashed #667eea;
+      }
+
+      input[type="text"],
+      input[type="number"] {
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 1em;
+        width: 100%;
+        max-width: 300px;
+        margin: 10px 0;
+        transition: border-color 0.3s;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        margin: 5px;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .status-box {
+        background: #f0f0f0;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+        font-family: "Courier New", monospace;
+        font-size: 0.9em;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .status-line {
+        padding: 5px;
+        margin: 2px 0;
+        border-radius: 4px;
+      }
+
+      .status-connected {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .status-disconnected {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .status-message {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+
+      .status-error {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .tips {
+        background: #fff3cd;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+        border-left: 4px solid #ffc107;
+      }
+
+      .tips strong {
+        color: #856404;
+      }
+
+      .reflection {
+        background: #e7f3ff;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 15px;
+        border-left: 4px solid #2196f3;
+      }
+
+      .reflection-title {
+        font-weight: bold;
+        color: #1976d2;
+        margin-bottom: 10px;
+      }
+
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 1em;
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .host-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .host-item {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        border: 2px solid #ddd;
+        min-width: 200px;
+      }
+
+      .host-name {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .host-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .status-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      .status-online {
+        background: #28a745;
+      }
+
+      .status-offline {
+        background: #dc3545;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      code {
+        background: #f4f4f4;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: "Courier New", monospace;
+        color: #d63384;
+      }
+
+      .concept-box {
+        background: #e8f5e9;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+        border-left: 4px solid #4caf50;
+      }
+
+      .badge {
+        display: inline-block;
+        background: #ffc107;
+        color: #000;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: bold;
+        margin: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>WebSockets</h1>
+
+      <div class="learning-path">
+        <!-- Explicação -->
+        <div class="phase" id="phase1">
+          <div class="phase-header" onclick="togglePhase('phase1')">
+            <div class="phase-number">1</div>
+            <div class="phase-title">Entenda o Problema</div>
+            <div class="phase-status">📖</div>
+          </div>
+          <div class="phase-content">
+            <div class="concept-box">
+              <strong>Situação:</strong> Imagine que você é responsável por
+              monitorar vários servidores de uma empresa. <br />Cada servidor
+              pode estar online ou offline, e essa informação muda a qualquer
+              momento. <br />Se você usar apenas requisições HTTP comuns, o
+              cliente (navegador) teria que ficar perguntando toda hora para o
+              servidor: “E aí, algum servidor caiu? E agora? E agora?”.
+              <br />Isso gera tráfego desnecessário e não é nada eficiente.
+              <br />Com WebSockets, em vez de ficar perguntando, o cliente
+              mantém uma conexão aberta com o servidor. <br />Assim que algum
+              servidor muda de status, a atualização chega em tempo real no
+              navegador.
+            </div>
+          </div>
+        </div>
+
+        <!-- FASE 2 -->
+        <div class="phase" id="phase2">
+          <div class="phase-header" onclick="togglePhase('phase2')">
+            <div class="phase-number">2</div>
+            <div class="phase-title">Conecte-se ao Servidor</div>
+            <div class="phase-status">🔌</div>
+          </div>
+          <div class="phase-content">
+            <div class="concept-box">
+              <strong>📚 Conceito:</strong> WebSocket é um protocolo que permite
+              comunicação bidirecional em tempo real. Diferente de HTTP, a
+              conexão fica aberta e ambos (cliente e servidor) podem enviar
+              mensagens a qualquer momento.
+            </div>
+
+            <div class="challenge">
+              <div class="challenge-title">🎯 Seu Primeiro WebSocket</div>
+              <p>
+                Você deve criar um servidor servidor websocket e conseguir se
+                conectar a ele. Digite o endereço do servidor WebSocket:
+              </p>
+
+              <div class="interactive-area">
+                <input
+                  type="text"
+                  id="serverUrl"
+                  value="ws://localhost:8765"
+                  placeholder="ws://localhost:8765"
+                />
+                <br />
+                <button id="connectBtn" onclick="connectWebSocket()">
+                  Conectar
+                </button>
+                <button
+                  id="disconnectBtn"
+                  onclick="disconnectWebSocket()"
+                  disabled
+                >
+                  Desconectar
+                </button>
+
+                <div class="status-box" id="connectionLog"></div>
+              </div>
+            </div>
+
+            <div class="tips">
+              <strong>💡 O que está acontecendo:</strong> Quando você clica em
+              "Conectar", o navegador abre uma conexão WebSocket. Essa conexão
+              fica ativa e permite troca de mensagens em tempo real!
+            </div>
+          </div>
+        </div>
+
+        <!-- FASE 3 -->
+        <div class="phase" id="phase3">
+          <div class="phase-header" onclick="togglePhase('phase3')">
+            <div class="phase-number">3</div>
+            <div class="phase-title">Receber Comandos</div>
+            <div class="phase-status">📤</div>
+          </div>
+          <div class="phase-content">
+            <div class="challenge">
+              <div class="challenge-title">Receber Comandos</div>
+              <p>
+                Agora que está criado, seu websocket deve ser capaz de receber e
+                enviar comandos, você deve no servidor receber uma mensagem como
+                descrito abaixo e enviar ela de volta
+              </p>
+              <div class="tips">
+                <strong>💡 Estrutura do comando:</strong> Seu websocket deve
+                receber a mensagem no seguinte formato:
+                <code
+                  >{"cmd": "repeat", "message": "{sua-mensagem}"} e devolver a
+                  mensagem para o cliente no mesmo formato</code
+                >
+              </div>
+              <div class="interactive-area">
+                <label>Sua mensagem:</label><br />
+                <input
+                  type="text"
+                  id="messageInput"
+                  placeholder="olá servidor"
+                  value="Olá servidor"
+                />
+                <br />
+                <button
+                  onclick="sendFirstMessage()"
+                  id="firstMessageButton"
+                  disabled
+                >
+                  Enviar mensagem
+                </button>
+
+                <div class="status-box" id="firstMessageLog"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FASE 4 -->
+        <div class="phase" id="phase4">
+          <div class="phase-header" onclick="togglePhase('phase4')">
+            <div class="phase-number">4</div>
+            <div class="phase-title">
+              Envie Comandos - Monitore apenas um serviço
+            </div>
+            <div class="phase-status">📤</div>
+          </div>
+          <div class="phase-content">
+            <div class="concept-box">
+              <strong>📚 Conceito:</strong> Em WebSockets, cliente e servidor
+              trocam mensagens. Geralmente usamos JSON para estruturar os dados.
+              Cada mensagem pode representar um comando ou uma resposta.
+            </div>
+
+            <div class="challenge">
+              <div class="challenge-title">🎯 Monitore seu Primeiro Host</div>
+              <p>
+                Agora que sabe receber e enviar comandos, envie um comando para
+                monitorar um host. Tente com <code>google.com</code> primeiro!
+              </p>
+
+              <div class="interactive-area">
+                <label>Host para monitorar:</label><br />
+                <input
+                  type="text"
+                  id="hostInput"
+                  placeholder="google.com"
+                  value="google.com"
+                />
+                <br />
+                <label>Intervalo (segundos):</label><br />
+                <input
+                  type="number"
+                  id="intervalInput"
+                  placeholder="5"
+                  value="5"
+                  min="1"
+                />
+                <br />
+                <button onclick="monitorHost()" id="monitorBtn" disabled>
+                  Iniciar Monitoramento
+                </button>
+
+                <div class="status-box" id="messageLog"></div>
+              </div>
+            </div>
+
+            <div class="tips">
+              <strong>💡 Estrutura da mensagem:</strong> Seu websocket deve
+              receber a mensagem no seguinte formato:
+              <code
+                >{"cmd": "monitor", "host": "google.com", "interval": 5}</code
+              >
+              e retornar no seguinte formato
+              <code>{"host": "google.com", "tcp": boolean}</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- FASE 4 -->
+        <div class="phase" id="phase5">
+          <div class="phase-header" onclick="togglePhase('phase5')">
+            <div class="phase-number">5</div>
+            <div class="phase-title">
+              Envie Comandos - Monitore multiplos serviços
+            </div>
+            <div class="phase-status">📊</div>
+          </div>
+          <div class="phase-content">
+            <div class="concept-box">
+              <strong>📚 Conceito:</strong> A mágica dos WebSockets! O servidor
+              pode enviar atualizações automaticamente sem que você precise
+              pedir. Isso é perfeito para monitoramento em tempo real.
+            </div>
+
+            <div class="challenge">
+              <div class="challenge-title">
+                🎯 Experimente Monitorar Múltiplos Hosts
+              </div>
+              <p>
+                Teste monitorar vários hosts ao mesmo tempo e veja as
+                atualizações em tempo real!
+              </p>
+
+              <div class="interactive-area">
+                <p><strong>Sugestões de hosts para testar:</strong></p>
+                <button onclick="quickMonitor('google.com')">google.com</button>
+                <button onclick="quickMonitor('github.com')">github.com</button>
+                <button onclick="quickMonitor('amazon.com')">amazon.com</button>
+                <button onclick="quickMonitor('localhost')">localhost</button>
+
+                <h3 style="margin-top: 20px">Status dos Hosts Monitorados:</h3>
+                <div class="host-list" id="hostList"></div>
+              </div>
+            </div>
+
+            <div class="tips">
+              <strong>💡 Observe:</strong> Cada host envia atualizações
+              independentemente! Você está recebendo dados em tempo real de
+              múltiplas fontes simultaneamente. Isso seria muito complexo com
+              HTTP tradicional.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script_objeto.js"></script>
+  </body>
+</html>
