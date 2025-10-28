@@ -1,0 +1,7 @@
+fastapi[standard]
+aio-pika
+telegram
+python-telegram-bot
+pydantic
+pymongo
+python-dotenv

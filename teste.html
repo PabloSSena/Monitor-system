@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebSocket Test</title>
+  </head>
+  <body>
+    <h1>WebSocket Monitor</h1>
+    <div id="messages"></div>
+
+    <script>
+      const ws = new WebSocket("ws://localhost:8000/ws");
+
+      ws.onopen = () => {
+        console.log("Conectado!");
+        document.getElementById("messages").innerHTML += "<p>✓ Conectado</p>";
+      };
+
+      ws.onmessage = (event) => {
+        console.log("Mensagem:", event.data);
+        document.getElementById(
+          "messages"
+        ).innerHTML += `<p>${new Date().toLocaleTimeString()}: ${
+          event.data
+        }</p>`;
+      };
+
+      ws.onerror = (error) => {
+        console.error("Erro:", error);
+        document.getElementById("messages").innerHTML += "<p>✗ Erro</p>";
+      };
+
+      ws.onclose = () => {
+        console.log("Desconectado");
+        document.getElementById("messages").innerHTML += "<p>Desconectado</p>";
+      };
+    </script>
+  </body>
+</html>

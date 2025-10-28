@@ -1,0 +1,8 @@
+fastapi[standard]
+websockets
+fastapi
+uvicorn
+pydantic
+pydantic-settings
+pymongo
+aio-pika
