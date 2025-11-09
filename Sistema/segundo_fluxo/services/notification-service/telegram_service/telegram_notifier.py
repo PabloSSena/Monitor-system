@@ -75,3 +75,4 @@ async def list_services(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e: 
         print(f'erro ao listar serviços: {e}')    
         
+

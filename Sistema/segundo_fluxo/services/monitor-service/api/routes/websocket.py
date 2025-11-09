@@ -15,15 +15,27 @@ websocketRouter = APIRouter()
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     monitor_tasks: Dict[str, asyncio.Task] = {}
-    list_of_hosts =list_hosts(hosts_collection.find())
-    for host in list_of_hosts:
-        task = asyncio.create_task(monitor_host(websocket, host, 5))
-        monitor_tasks[host] = task    
-    
     try:
         while True:
-            await asyncio.sleep(1)
+            current_hosts = set(list_hosts(hosts_collection.find()))
+            existing_hosts = set(monitor_tasks.keys())
+            new_hosts = current_hosts - existing_hosts
+            for host in new_hosts:
+                if host not in monitor_tasks:
+                    task = asyncio.create_task(monitor_host(websocket, host, 5))
+                    monitor_tasks[host] = task
+                    logger.info(f"Novo host adicionado: {host}")
             
+            removed_hosts =  existing_hosts - current_hosts
+            for host in removed_hosts:
+                if host in monitor_tasks:
+                    monitor_tasks[host].cancel()
+                    await monitor_tasks[host]
+                    del monitor_tasks[host]
+                    logger.info(f"Host removido: {host}")        
+
+            await asyncio.sleep(10)
+
     except WebSocketDisconnect:
         logger.info("Cliente desconectou")
         for task in monitor_tasks.values():

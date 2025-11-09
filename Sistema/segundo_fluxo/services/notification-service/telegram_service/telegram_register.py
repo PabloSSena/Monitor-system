@@ -2,7 +2,7 @@ import os
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 import threading
-from telegram_service.telegram_notifier import register_service, list_services, oi
+from telegram_service.telegram_notifier import register_service, list_services
 from dotenv import load_dotenv
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -18,7 +18,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Agora você receberá notificações quando algum serviço cair.\n\n"
             f"Seu Chat ID: `{chat_id}`\n\n"
             f"Comandos:\n"
-            f"/start - Cadastrar/Recadastrar\n",
+            f"/register - Cadastrar Serviços\n"
+            f"/status - Status de todos seus serviços\n",
             parse_mode='Markdown'
     )
 
@@ -28,7 +29,8 @@ def start_bot():
     
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("register",register_service ))
-    app.add_handler(CommandHandler("status",list_services ))    
+    app.add_handler(CommandHandler("status",list_services ))   
+     
     
     def run_bot():
         app.run_polling(
