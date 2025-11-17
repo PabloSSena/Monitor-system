@@ -737,12 +737,13 @@
           <div class="exercise-box">
             <h3 style="color: #e65100">Exercício 3: Alerta Assíncrono de Queda de Serviço via RabbitMQ. </h3>
             <br></br>
-            <p><strong>Objetivo:</strong> Usando o código da atividade de Websockets como base, implemente um sistema de mensagens com RabbitMQ</p>
+            <p><strong>Objetivo:</strong> Usando o código da atividade de Websockets como base, implemente um sistema de notificação com RabbitMQ.</p>
             <br></br>
-            <p>Você deve criar uma maneira de que sempre que um serviço esteja indisponível, o sistema de monitoramento avisa outro sistema de que o serviço caiu e que deve avisar os responsáveis por ele.</p>
+            <p>Você deve criar um novo sistema, um sistema de "notificação" e usando rabbitmq o sistema de monitoramento deve avisar o sistema de notificação de que o serviço ficou inativo e que deve avisar os responsáveis por ele.</p>
             <br></br>
             <p>Seu código não deve ser responsável por alertar o usuário que o serviço caiu, sua responsabilidade é fazer a comunicação entre o serviço de monitoramento e o serviço de notificação que você criará.</p>
             <br></br>
+            <p>Sua tarefa estará concluída quando seu sistema de monitoramento estiver produzindo mensagens, e o de notificação conseguindo as consumir.</p>
             <h4>Exemplo de arquitetura de como deve ficar seu sistema</h4>
             <div class="image-container">
               <img src="./images/arqExample.png" alt="exhange" class="diagram-image">
