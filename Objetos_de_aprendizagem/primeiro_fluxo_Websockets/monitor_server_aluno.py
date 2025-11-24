@@ -54,7 +54,7 @@ async def handler(ws):
     """
     monitor_tasks: Dict[str, asyncio.Task] = {}
 
-        #To-do: Loop infinito para receber mensagens do cliente
+        #To-do: Loop infinito para receber mensagens e manter conexão aberta com o cliente
             #To-do: Aguardar mensagem do cliente
             #To-do: Parsear JSON
             #To-do: Validar comando

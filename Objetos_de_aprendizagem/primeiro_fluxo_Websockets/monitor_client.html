@@ -322,17 +322,34 @@
           </div>
           <div class="phase-content">
             <div class="concept-box">
-              <strong>Situação:</strong> Imagine que você é responsável por
-              monitorar vários servidores de uma empresa. <br />Cada servidor
-              pode estar online ou offline, e essa informação muda a qualquer
-              momento. <br />Se você usar apenas requisições HTTP comuns, o
-              cliente (navegador) teria que ficar perguntando toda hora para o
-              servidor: “E aí, algum servidor caiu? E agora? E agora?”.
-              <br />Isso gera tráfego desnecessário e não é nada eficiente.
-              <br />Com WebSockets, em vez de ficar perguntando, o cliente
-              mantém uma conexão aberta com o servidor. <br />Assim que algum
-              servidor muda de status, a atualização chega em tempo real no
-              navegador.
+              <strong>Situação — Desafio real:</strong>
+              <p>
+                Você é o(a) responsável pelo monitoramento: dezenas de
+                servidores em produção, queda significa impacto real. Polling
+                constante com HTTP gera tráfego e demora.
+              </p>
+
+              <ul style="margin: 10px 0 8px 18px">
+                <li>
+                  <strong>Problema:</strong> Requisições periódicas (polling) —
+                  lento e ineficiente.
+                </li>
+                <li>
+                  <strong>Solução:</strong> WebSockets — conexão persistente e
+                  comunicação bidirecional em tempo real.
+                </li>
+              </ul>
+
+              <p style="font-weight: 700; color: #0b63d6; margin: 8px 0">
+                Objetivo: assim que um servidor mudar de status, sua UI recebe a
+                atualização instantaneamente.
+              </p>
+
+              <p style="margin: 8px 0">
+                Analogia rápida: imagine um canal direto (um "tubo") entre
+                navegador e servidor — qualquer evento atravessa o tubo sem
+                precisar perguntar.
+              </p>
             </div>
           </div>
         </div>
@@ -354,10 +371,14 @@
 
             <div class="challenge">
               <div class="challenge-title">🎯 Seu Primeiro WebSocket</div>
-              <p>
-                Você deve criar um servidor servidor websocket e conseguir se
-                conectar a ele. Digite o endereço do servidor WebSocket:
-              </p>
+              <strong>
+                O código base que você possui cria uma conexão WebSocket, mas
+                não mantém ela aberta. Seu primeiro desafio é manter essa
+                conexão ativa. <br /><br />
+                Você saberá que completou o desafio quando ao clicar em
+                "Conectar" receber apenas a mensagem "Conectado ao servidor
+                WebSocket". <br /><br />Digite o endereço do servidor WebSocket:
+              </strong>
 
               <div class="interactive-area">
                 <input
@@ -394,17 +415,23 @@
         <div class="phase" id="phase3">
           <div class="phase-header" onclick="togglePhase('phase3')">
             <div class="phase-number">3</div>
-            <div class="phase-title">Receber Comandos</div>
+            <div class="phase-title">Enviar e Receber Comandos</div>
             <div class="phase-status">📤</div>
           </div>
           <div class="phase-content">
             <div class="challenge">
-              <div class="challenge-title">Receber Comandos</div>
-              <p>
-                Agora que está criado, seu websocket deve ser capaz de receber e
-                enviar comandos, você deve no servidor receber uma mensagem como
-                descrito abaixo e enviar ela de volta
-              </p>
+              <div class="challenge-title">Enviar e Receber Comandos</div>
+              <strong>
+                Agora que sua conexão está criada e ativa, seu websocket deve
+                ser capaz de receber e enviar comandos. <br /><br />
+                No servidor você deve receber uma mensagem como descrito abaixo
+                e enviar a mesma mesagem de volta para o cliente.
+              </strong>
+              <br /><br />
+              <strong>
+                Você saberá que completou o desafio quando ao clicar em "Enviar
+                Mensagem" receber a mesma mensagem que enviou.</strong
+              >
               <div class="tips">
                 <strong>💡 Estrutura do comando:</strong> Seu websocket deve
                 receber a mensagem no seguinte formato:
@@ -454,11 +481,25 @@
 
             <div class="challenge">
               <div class="challenge-title">🎯 Monitore seu Primeiro Host</div>
-              <p>
-                Agora que sabe receber e enviar comandos, envie um comando para
-                monitorar um host. Tente com <code>google.com</code> primeiro!
-              </p>
+              <strong>
+                Agora que você sabe receber e enviar comandos, utilize a função
+                "tcp_check" disponibilizada no seu código base para criar a
+                função de monitoramento de serviços.<br />
+                <br />
 
+                Após a implementação, envie um comando para monitorar um host.
+                Tente com
+                <code>google.com</code> primeiro!
+              </strong>
+              <div class="tips">
+                <strong>💡 Estrutura da mensagem:</strong> Seu websocket deve
+                receber a mensagem no seguinte formato:
+                <code
+                  >{"cmd": "monitor", "host": "google.com", "interval": 5}</code
+                >
+                e retornar no seguinte formato
+                <code>{"host": "google.com", "tcp": boolean}</code>
+              </div>
               <div class="interactive-area">
                 <label>Host para monitorar:</label><br />
                 <input
@@ -484,16 +525,6 @@
                 <div class="status-box" id="messageLog"></div>
               </div>
             </div>
-
-            <div class="tips">
-              <strong>💡 Estrutura da mensagem:</strong> Seu websocket deve
-              receber a mensagem no seguinte formato:
-              <code
-                >{"cmd": "monitor", "host": "google.com", "interval": 5}</code
-              >
-              e retornar no seguinte formato
-              <code>{"host": "google.com", "tcp": boolean}</code>
-            </div>
           </div>
         </div>
 
@@ -517,13 +548,13 @@
               <div class="challenge-title">
                 🎯 Experimente Monitorar Múltiplos Hosts
               </div>
-              <p>
-                Teste monitorar vários hosts ao mesmo tempo e veja as
-                atualizações em tempo real!
-              </p>
+              <strong>
+                Adapte seu código para monitorar vários hosts ao mesmo tempo e
+                veja as atualizações em tempo real!
+              </strong>
 
               <div class="interactive-area">
-                <p><strong>Sugestões de hosts para testar:</strong></p>
+                <strong>Sugestões de hosts para testar:</strong><br />
                 <button onclick="quickMonitor('google.com')">google.com</button>
                 <button onclick="quickMonitor('github.com')">github.com</button>
                 <button onclick="quickMonitor('amazon.com')">amazon.com</button>
