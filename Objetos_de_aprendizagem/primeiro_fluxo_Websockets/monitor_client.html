@@ -368,7 +368,17 @@
               conexão fica aberta e ambos (cliente e servidor) podem enviar
               mensagens a qualquer momento.
             </div>
-
+            <div class="tips">
+              <strong>💡 Pré-requisitos para executar o servidor:</strong>
+              <ol style="margin: 10px 0 0 20px; line-height: 1.8">
+                <li>Certifique-se de ter Python 3 instalado</li>
+                <li>
+                  Instale a biblioteca websockets:
+                  <code>pip install websockets</code>
+                </li>
+                <li>Execute o servidor WebSocket antes de conectar</li>
+              </ol>
+            </div>
             <div class="challenge">
               <div class="challenge-title">🎯 Seu Primeiro WebSocket</div>
               <strong>
@@ -401,12 +411,6 @@
 
                 <div class="status-box" id="connectionLog"></div>
               </div>
-            </div>
-
-            <div class="tips">
-              <strong>💡 O que está acontecendo:</strong> Quando você clica em
-              "Conectar", o navegador abre uma conexão WebSocket. Essa conexão
-              fica ativa e permite troca de mensagens em tempo real!
             </div>
           </div>
         </div>
